@@ -17,15 +17,11 @@
 
 class Renderer {
 public:
-	const char* windowTitle = "C++ OpenGL Boilerplate";
+	const char* windowTitle = "OpenGL Experimental";
     int windowWidth = 1024, windowHeight = 1024;
 	bool isFullscreen = false;
 
 	const int MSAALevel = 2; //MS Antialiasing: 1 for none, 2 for 4x, 4 for 16x
-
-
-	enum RenderType {ScreenTexture, Geometry};
-	RenderType renderType = ScreenTexture;
 
     float deltaTime = 0.0f;
     Camera camera;
@@ -58,7 +54,7 @@ private:
 	int minimizedWidth = 1280, minimizedHeight = 720;
 	int screenResHeight, screenResWidth;
 
-    Shader screenTextureShader, geometryShader;
+    Shader geometryShader;
     SDL_Window *window;
 	std::vector<GeometryVBO> geometryVBOs;
 
@@ -72,13 +68,7 @@ private:
 
 	void initGeometry();
 
-	void initScreenTexture();
-
-	//Functions related to drawing 3D objects through rasterizing
-	void drawGeometry();
-
-	//Functions related to drawing a screen texture from a byte array
-	void drawScreenTexture();
+	void draw();
 
 	void centerWindow();
 

@@ -12,6 +12,7 @@ struct Texture
 {
 	int ID, width, height, nrChannels;
 	unsigned char* data;
+	std::string name;
 };
 
 class FileHandler
@@ -45,6 +46,7 @@ public:
 		texture.width = width;
 		texture.height = height;
 		texture.nrChannels = nrChannels;
+		texture.name = filename;
 		if (!texture.data)
 			std::cout << "Failed to load texture: " << filename << std::endl;
 		else
@@ -91,10 +93,13 @@ public:
 					tinyobj::real_t vx = attrib.vertices[3 * idx.vertex_index + 0];
 					tinyobj::real_t vy = attrib.vertices[3 * idx.vertex_index + 1];
 					tinyobj::real_t vz = attrib.vertices[3 * idx.vertex_index + 2];
-					//tinyobj::real_t tx = attrib.texcoords[2 * idx.texcoord_index + 0];
-					//tinyobj::real_t ty = attrib.texcoords[2 * idx.texcoord_index + 1];
-					//vertices.insert(vertices.end(), { vx, vy, vz, tx, ty }); //With textures
-					vertices.insert(vertices.end(), { vx, vy, vz }); //Without textures
+					tinyobj::real_t nx = attrib.vertices[3 * idx.normal_index + 0];
+					tinyobj::real_t ny = attrib.vertices[3 * idx.normal_index + 1];
+					tinyobj::real_t nz = attrib.vertices[3 * idx.normal_index + 2];
+					tinyobj::real_t tx = attrib.texcoords[2 * idx.texcoord_index + 0];
+					tinyobj::real_t ty = attrib.texcoords[2 * idx.texcoord_index + 1];
+					vertices.insert(vertices.end(), { vx, vy, vz, nx, ny, nz, tx, ty }); //With textures
+					//vertices.insert(vertices.end(), { vx, vy, vz }); //Without textures
 				}
 				index_offset += fv;
 			}

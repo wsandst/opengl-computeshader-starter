@@ -14,6 +14,11 @@ set(USING_COPY TRUE)
 # Project setup
 cmake_minimum_required(VERSION 3.10)
 
+set(CMAKE_CXX_FLAGS "-pthread -g")
+
+set(CMAKE_CXX_FLAGS_DEBUG "-D -g -pthread")
+set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pthread")
+
 project(opengl-experimental
     LANGUAGES C CXX
     VERSION 1.0.0

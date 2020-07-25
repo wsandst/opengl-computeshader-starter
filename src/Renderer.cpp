@@ -29,11 +29,7 @@ void Renderer::render()
 	camera.calculateProjectionMatrix();
 	camera.calculateViewMatrix();
 
-	switch (renderType)
-	{
-		case ScreenTexture: drawScreenTexture(); break;
-		case Geometry: drawGeometry(); break;
-	}
+	draw();
 
 	glBindVertexArray(VAO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -41,22 +37,18 @@ void Renderer::render()
 	SDL_GL_SwapWindow(window);
 }
 
-void Renderer::drawGeometry()
+void Renderer::draw()
 {
 	geometryShader.use();
 
 	for (auto& it : geometryVBOs) { //Draw chunks
 		glm::mat4 matrix = glm::mat4(camera.getProjectionMatrix() * camera.getViewMatrix() * it.translation);
+
+		glBindTexture(GL_TEXTURE_2D, texture);
 		geometryShader.setMat4("matrix", matrix);
 		glBindVertexArray(it.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, it.size);
 	}
-}
-
-void Renderer::drawScreenTexture()
-{
-	glActiveTexture(GL_TEXTURE0);
-	screenTextureShader.use();
 }
 
 void Renderer::init()
@@ -66,11 +58,7 @@ void Renderer::init()
 	initSDL();
 	initOpenGL();
 
-	switch (renderType)
-	{
-	case ScreenTexture: initScreenTexture(); break;
-	case Geometry: initGeometry(); break;
-	}
+	initGeometry();
 
 }
 
@@ -88,6 +76,12 @@ void Renderer::initOpenGL()
 	//Wireframes
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	
+	// set the texture wrapping/filtering options (on the currently bound texture object)
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
 	glViewport(0, 0, windowWidth, windowHeight);
 }
 
@@ -125,35 +119,26 @@ void Renderer::initGeometry()
 	geometryShader = Shader("shaders/geometry.vert", "shaders/geometry.frag");
 }
 
-void Renderer::initScreenTexture()
-{
-	//stbi_set_flip_vertically_on_load(true);
-	screenTextureShader = Shader("shaders/screentexture.vert", "shaders/screentexture.frag");
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-}
-
 void Renderer::requestShaderReload()
 {
-	switch (renderType)
-	{
-	case ScreenTexture: screenTextureShader.reload(); break;
-	case Geometry: geometryShader.reload(); break;
-	}
+	geometryShader.reload();
 }
 
 void Renderer::loadVBOs(std::vector<Mesh>& meshes)
 {
-	for (auto &mesh : meshes)
+	/*for (auto &mesh : meshes)
 	{
 		geometryVBOs.push_back(GeometryVBO(mesh.pos, mesh.vertices));
-	}
+	}*/
+
+	geometryVBOs.push_back(GeometryVBO(meshes[0].pos, meshes[0].vertices));
+
+	glGenTextures(1, &texture);
+	glBindTexture(GL_TEXTURE_2D, texture);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, meshes[0].texture.width, meshes[0].texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, meshes[0].texture.data);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(meshes[0].texture.data);
 }
 
 void Renderer::toggleFullscreen() {

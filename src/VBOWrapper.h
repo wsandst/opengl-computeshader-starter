@@ -13,15 +13,31 @@
 #include <vector>
 
 struct GeometryVertexAttrib {
-	GeometryVertexAttrib(float x, float y, float z) {
+	float position[3];
+	float normal[3];
+	float uv[2];
+
+	GeometryVertexAttrib(float x, float y, float z, float nx, float ny, float nz, float u, float v) {
 		position[0] = x;
 		position[1] = y;
 		position[2] = z;
+		normal[0] = nx;
+		normal[1] = ny;
+		normal[2] = nz;
+		uv[0] = u;
+		uv[1] = v;
 	}
-
-	float position[3];
+	GeometryVertexAttrib(glm::vec3& pos, glm::vec3& normal, glm::vec2 uv) {
+		position[0] = pos.x;
+		position[1] = pos.y;
+		position[2] = pos.z;
+		normal[0] = normal.x;
+		normal[1] = normal.y;
+		normal[2] = normal.z;
+		uv[0] = uv.x;
+		uv[1] = uv.y;
+	}
 };
-
 
 class GeometryVBO
 {
@@ -52,9 +68,18 @@ public:
 		{
 			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GeometryVertexAttrib), &vertices[0], GL_STATIC_DRAW);
 		}
+
 		//Positions
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GeometryVertexAttrib), nullptr);
 		glEnableVertexAttribArray(0);
+
+		//Vertex normal								
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GeometryVertexAttrib), (void*)offsetof(GeometryVertexAttrib, normal));
+		glEnableVertexAttribArray(1);		
+
+		//Texture uvs
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GeometryVertexAttrib), (void*)offsetof(GeometryVertexAttrib, uv));
+		glEnableVertexAttribArray(2);
 
 	}
 	void update(std::vector<GeometryVertexAttrib>& vertices)
