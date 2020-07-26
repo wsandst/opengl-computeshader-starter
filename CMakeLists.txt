@@ -61,6 +61,9 @@ find_package(SDL2 REQUIRED)
 # GLM
 find_package(GLM REQUIRED)
 
+#FreeType2
+find_package(Freetype REQUIRED)
+
 # GLEW
 set(GLEW_USE_STATIC_LIBS ON)
 find_package(GLEW REQUIRED)
@@ -74,12 +77,13 @@ set(INCS
     ${GLEW_INCLUDE_DIRS}
     ${CMAKE_CURRENT_LIST_DIR}/external/stb
     ${CMAKE_CURRENT_LIST_DIR}/external/tinyobjloader
+    ${FREETYPE_INCLUDE_DIRS}
     )
 
 include_directories(${INCS})
 
 #Set variable LIBS to the libraries included
-set(LIBS ${SDL2_LIBRARIES} ${GLM_LIBRARIES} GLEW::GLEW ${OPENGL_gl_LIBRARY})
+set(LIBS ${SDL2_LIBRARIES} ${GLM_LIBRARIES} GLEW::GLEW ${OPENGL_gl_LIBRARY} ${FREETYPE_LIBRARIES})
 
 #Link with libraries
 target_link_libraries(${PROJECT_NAME} ${LIBS})
