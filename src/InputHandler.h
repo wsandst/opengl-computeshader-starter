@@ -3,6 +3,8 @@
 #include "Renderer.h"
 #include "SDL.h"
 
+#include <string>
+
 class InputHandler
 {
 private:

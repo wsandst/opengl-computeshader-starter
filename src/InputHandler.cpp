@@ -37,20 +37,34 @@ void InputHandler::handleInput(float deltaTime)
 				camera.changeMaxVelocity(2);
 				std::cout << "Max speed: " << camera.maxVelocity << "\n";
 				break;
+
 			case SDLK_x: //Change max speed by 0.5x
 				camera.changeMaxVelocity(0.5);
 				std::cout << "Max speed: " << camera.maxVelocity << "\n";
 				break;
+
 			case SDLK_r: //Hot reload shaders
 				std::cout << "Reloading Shaders" << "\n";
 				renderer.requestShaderReload();
 				break;
-			case SDLK_F9: //Print camera position
-				std::cout << "Camera pos: x: " << camera.getPosition().x << " y: " << camera.getPosition().y << " z: " << camera.getPosition().z << "\n";
+
+			case SDLK_F1: //Toggle text display
+				std::cout << "F1: Text display toggled\n";
+				renderer.displayText = !renderer.displayText;
 				break;
 
+			case SDLK_F3: //Toggle coordinate display
+			{
+				std::cout << "F3: Coordinate display toggled\n";
+				std::cout << "Camera pos: x: " << camera.getPosition().x << " y: " << camera.getPosition().y << " z: " << camera.getPosition().z << "\n";
+				renderer.displayDebugInfo = !renderer.displayDebugInfo;
+				if (!renderer.displayDebugInfo)
+					renderer.updateText(2, "");
+				break;
+			}
+
 			case SDLK_F11: //Toggle fullscreen
-				std::cout << "Fullscreen toggled" << "\n";
+				std::cout << "F11: Fullscreen toggled" << "\n";
 				renderer.toggleFullscreen();
 				break;
 

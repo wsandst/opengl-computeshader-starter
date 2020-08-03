@@ -100,3 +100,86 @@ public:
 		translation = glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
 	}
 };
+
+struct TextVertexAttrib {
+	float position[2];
+	float uv[2];
+
+	TextVertexAttrib() {
+
+	}
+
+	TextVertexAttrib(float x, float y, float u, float v) {
+		position[0] = x;
+		position[1] = y;
+		uv[0] = u;
+		uv[1] = v;
+	}
+	TextVertexAttrib(glm::vec2& pos, glm::vec2 uv) {
+		position[0] = pos.x;
+		position[1] = pos.y;
+		uv[0] = uv.x;
+		uv[1] = uv.y;
+	}
+};
+
+
+class TextVBO
+{
+public:
+	unsigned int VBO;
+	unsigned int VAO;
+	glm::mat4 translation;
+	int size;
+
+	TextVBO() {};
+	TextVBO(Vec3i pos, std::vector<TextVertexAttrib>& vertices)
+	{
+		create(vertices);
+		setPosition(pos);
+	};
+	~TextVBO()
+	{
+	};
+	void create(std::vector<TextVertexAttrib>& vertices)
+	{
+		size = vertices.size();
+		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		if (vertices.size() > 0)
+		{
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(TextVertexAttrib), &vertices[0], GL_DYNAMIC_DRAW);
+			//GL_DYNAMIC_DRAW
+		}
+
+		//Positions
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertexAttrib), nullptr);
+		glEnableVertexAttribArray(0);
+
+		//Texture uvs
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertexAttrib), (void*)offsetof(TextVertexAttrib, uv));
+		glEnableVertexAttribArray(1);
+
+	}
+	void update(std::vector<TextVertexAttrib>& vertices)
+	{
+		size = vertices.size();
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		if (vertices.size() > 0)
+		{
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(TextVertexAttrib), &vertices[0], GL_DYNAMIC_DRAW);
+			//GL_DYNAMIC_DRAW
+		}
+	}
+	void remove()
+	{
+
+	}
+	void setPosition(Vec3i pos)
+	{
+		translation = glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
+	}
+};
