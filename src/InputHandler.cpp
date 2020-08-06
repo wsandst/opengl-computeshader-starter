@@ -53,6 +53,11 @@ void InputHandler::handleInput(float deltaTime)
 				renderer.displayText = !renderer.displayText;
 				break;
 
+			case SDLK_F2:
+				std::cout << "F2: Taking screenshot\n";
+				renderer.screenshot();
+				break;
+
 			case SDLK_F3: //Toggle coordinate display
 			{
 				std::cout << "F3: Coordinate display toggled\n";

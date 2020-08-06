@@ -10,6 +10,8 @@
 #include "ft2build.h"
 #include FT_FREETYPE_H 
 
+#include "stb_image_write.h"
+
 #include "Shader.h"
 #include "Camera.h"
 #include "VBOWrapper.h"
@@ -19,6 +21,7 @@
 #include <vector>
 #include <unordered_map>
 #include <algorithm>
+#include <ctime>
 
 class Renderer {
 public:
@@ -70,6 +73,8 @@ public:
 
 	void requestShaderReload();
 
+	void screenshot();
+
 private:
 	int minimizedWidth = 1000, minimizedHeight = 1000;
 	int screenResHeight, screenResWidth;
@@ -108,5 +113,6 @@ private:
 	void updateResolution();
 
 	void updateTextVBO(bool create=false);
+
 };
 
