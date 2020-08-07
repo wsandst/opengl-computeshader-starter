@@ -29,7 +29,7 @@ int main(int argc, char** argv)
 
 	std::vector<float> vertices = FileHandler::loadObj("diablo.obj");
 	Texture texture = FileHandler::loadImage("diablo.png");
-	Mesh diablo = Mesh(Vec3i{ 0, 0, 0 }, vertices, texture);
+	Mesh diablo = Mesh(glm::vec3{ 0, 0, 0 }, vertices, texture);
 
 	std::vector<Mesh> meshes = std::vector<Mesh>();
 	meshes.push_back(diablo);

@@ -109,14 +109,7 @@ public:
 		return vertices;
 	}
 
-	static void saveFile(std::string path, std::string file)
-	{
-		std::ofstream out(path);
-		out << file;
-		out.close();
-	}
-
-	static std::vector<std::string> split(std::string input, char delimiter)
+	static std::vector<std::string> stringSplit(std::string input, char delimiter)
 	{
 		std::vector<std::string> output;
 		size_t foundSymbolAt = 0;

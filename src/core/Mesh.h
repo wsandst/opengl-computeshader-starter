@@ -5,19 +5,19 @@
 struct Mesh
 {
 public:
-	Vec3i pos;
+	glm::vec3 pos;
 
 	std::vector<GeometryVertexAttrib> vertices;
 	Texture texture;
 
-	Mesh(Vec3i pos, std::vector<GeometryVertexAttrib>& vertices, Texture& texture)
+	Mesh(glm::vec3 pos, std::vector<GeometryVertexAttrib>& vertices, Texture& texture)
 	{
 		this->vertices = vertices;
 		this->pos = pos;
 		this->texture = texture;
 	}
 
-	Mesh(Vec3i pos, std::vector<float>& fVertices, Texture& texture)
+	Mesh(glm::vec3 pos, std::vector<float>& fVertices, Texture& texture)
 	{
 		vertices = std::vector<GeometryVertexAttrib>();
 		for (size_t i = 0; i < fVertices.size(); i += 8)

@@ -1,5 +1,4 @@
 #pragma once
-#include "Helpers.h"
 
 #define GLEW_STATIC 
 #include "GL/glew.h"
@@ -48,7 +47,7 @@ public:
 	int size;
 
 	GeometryVBO() {};
-	GeometryVBO(Vec3i pos, std::vector<GeometryVertexAttrib>& vertices)
+	GeometryVBO(glm::vec3 pos, std::vector<GeometryVertexAttrib>& vertices)
 	{
 		create(vertices);
 		setPosition(pos);
@@ -95,9 +94,9 @@ public:
 	{
 
 	}
-	void setPosition(Vec3i pos)
+	void setPosition(glm::vec3 pos)
 	{
-		translation = glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
+		translation = glm::translate(glm::mat4(1.0f), pos);
 	}
 };
 
@@ -133,10 +132,9 @@ public:
 	int size;
 
 	TextVBO() {};
-	TextVBO(Vec3i pos, std::vector<TextVertexAttrib>& vertices)
+	TextVBO(std::vector<TextVertexAttrib>& vertices)
 	{
 		create(vertices);
-		setPosition(pos);
 	};
 	~TextVBO()
 	{
@@ -174,12 +172,5 @@ public:
 			//GL_DYNAMIC_DRAW
 		}
 	}
-	void remove()
-	{
 
-	}
-	void setPosition(Vec3i pos)
-	{
-		translation = glm::translate(glm::mat4(1.0f), glm::vec3(pos.x, pos.y, pos.z));
-	}
 };
