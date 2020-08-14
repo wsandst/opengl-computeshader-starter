@@ -2,6 +2,7 @@
 #include "VBOWrapper.h"
 #include "FileHandler.h"
 
+///@brief Represents a 3D mesh. Vertices and a texture
 struct Mesh
 {
 public:

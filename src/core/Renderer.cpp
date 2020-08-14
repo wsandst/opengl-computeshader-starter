@@ -1,10 +1,4 @@
 #include "Renderer.h"
-#define GLEW_STATIC
-#include "GL/glew.h"
-
-//Todo
-//Pretty up code, split up DebugHandler into a few more functions. Add comments
-//Add color vertex attribute to text
 
 Renderer::Renderer(int windowWidth, int windowHeight)
 {
@@ -22,6 +16,7 @@ Renderer::~Renderer()
 {
 }
 
+///@brief Update the current deltatime of the frame, at the end of the frame
 void Renderer::updateDeltatime()
 {
 	TimePoint currentFrame = std::chrono::high_resolution_clock::now();
@@ -36,6 +31,7 @@ void Renderer::updateDeltatime()
 	}
 }
 
+///@brief Render the scene
 void Renderer::render()
 {
 	//Measure render time, only if debug mode enabled
@@ -60,8 +56,12 @@ void Renderer::render()
 		renderPerformanceMs = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - beginTime ).count() / 1000.0f;
 }
 
+///@brief Draw the Geometry VBOs to the screen
 void Renderer::draw()
 {
+	if (displayWireframes)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
 	geometryShader.use();
 
 	for (auto& it : geometryVBOs) { //Draw chunks
@@ -72,8 +72,12 @@ void Renderer::draw()
 		glBindVertexArray(it.VAO);
 		glDrawArrays(GL_TRIANGLES, 0, it.size);
 	}
+
+	if (displayWireframes)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+///@brief Initiate the window, OpenGL and the FreeType font library
 void Renderer::init()
 {
 	camera = Camera(windowWidth, windowHeight);
@@ -86,6 +90,7 @@ void Renderer::init()
 
 }
 
+///@brief Initiate OpenGL
 void Renderer::initOpenGL()
 {
 	glewExperimental = GL_TRUE;
@@ -109,6 +114,7 @@ void Renderer::initOpenGL()
 	glViewport(0, 0, windowWidth, windowHeight);
 }
 
+///@brief Initialize SDL2 and set it up for OpenGL rendering
 void Renderer::initSDL()
 {
 	if (SDL_Init(SDL_INIT_VIDEO), 0) {
@@ -211,17 +217,21 @@ void Renderer::initFreetype()
 	FT_Done_FreeType(freetype);
 }
 
+///@brief Initiate the needed components for 3D geometry rendering
 void Renderer::initGeometry()
 {
 	geometryShader = Shader("shaders/geometry.vert", "shaders/geometry.frag");
 	textShader = Shader("shaders/text.vert", "shaders/text.frag");
 }
 
+///@brief Hot reload the shaders
 void Renderer::requestShaderReload()
 {
 	geometryShader.reload();
+	textShader.reload();
 }
 
+///@brief Load the Geometry VBO/VBOs and the text VBO
 void Renderer::loadVBOs(std::vector<Mesh>& meshes)
 {
 	/*for (auto &mesh : meshes)
@@ -238,10 +248,12 @@ void Renderer::loadVBOs(std::vector<Mesh>& meshes)
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(meshes[0].texture.data);
 
+	//Create and update the text VBOS
 	updateTextVBO(true);
 
 }
 
+///@brief Toggle SDL2 fullscreen, set the appropriate resolution
 void Renderer::toggleFullscreen() {
 
 	isFullscreen = !isFullscreen;
@@ -267,6 +279,7 @@ void Renderer::toggleFullscreen() {
 	updateResolution();
 }
 
+///@brief Update OpenGL window resolution
 void Renderer::updateResolution()
 {
 
@@ -279,6 +292,7 @@ void Renderer::updateResolution()
 
 }
 
+///@brief Resize the SDL2 window and update various components which depend on resolution, ex text positions
 void Renderer::resizeWindow(int width, int height)
 {
 	windowWidth = width;
@@ -287,6 +301,7 @@ void Renderer::resizeWindow(int width, int height)
 	textUpdateRequired	= true;
 }
 
+///@brief Center the window, used when starting the program
 void Renderer::centerWindow()
 {
 	int newScreenPosX = screenResWidth / 2 - windowWidth / 2;
@@ -339,23 +354,6 @@ void Renderer::updateTextVBO(bool create)
 	
 }
 
-void Renderer::updateRealtimeTextContent()
-{
-	if (displayText)
-	{
-	//FPS counter
-	updateText(1, std::to_string(int(fps)), camera.windowWidth-50, camera.windowHeight-40);
-	if (displayDebugInfo)
-	{
-		//Coordinate display
-		std::string coordsString = "x: " + std::to_string(camera.getPosition().x) + "\ny: " + std::to_string(camera.getPosition().y) + "\nz: " + std::to_string(camera.getPosition().z);
-		updateText(2, coordsString, 20, camera.windowHeight-30);
-	}
-
-	updateTextVBO();
-	}
-}
-
 ///@brief Draw text based on the mostly static TextVBO.
 void Renderer::drawText()
 {
@@ -365,7 +363,6 @@ void Renderer::drawText()
 	
 	// activate corresponding render state	
 	textShader.use();
-	textShader.setVec3("textColor", textColor);
 	glm::mat4 projection = glm::ortho(0.0f, float(camera.windowWidth), 0.0f, float(camera.windowHeight));
 	textShader.setMat4("projection", projection);
     glActiveTexture(GL_TEXTURE0);
@@ -385,11 +382,13 @@ void Renderer::drawText()
 	glEnable(GL_DEPTH_TEST);
 }
 
+///@brief Prepare for program shutdown, close SDL2
 void Renderer::close()
 {
 	SDL_Quit();
 }
 
+///@brief Make a screenshot of the screen and save it to a file in the executable directory, named after the current date and time
 void Renderer::screenshot()
 {
 	//Get timestamp string
@@ -404,8 +403,10 @@ void Renderer::screenshot()
 		 + (now->tm_min < 10 ? "0" : "") + std::to_string(now->tm_min)
 		 + (now->tm_sec < 10 ? "0" : "") + std::to_string(now->tm_sec);
 
+	///OpenGL screen is flipped vertically
 	stbi_flip_vertically_on_write(1);
 
+	//Retrieve a bitmap array of the screen from OpeNGL
 	GLint viewport[4];
     glGetIntegerv(GL_VIEWPORT, viewport);
 
@@ -419,6 +420,7 @@ void Renderer::screenshot()
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glReadPixels(x, y, width, height, GL_RGB, GL_UNSIGNED_BYTE, &data[0]);
 
+	//Write the bitmap array to file as png
     int saved = stbi_write_png(date.data(), width, height, 3, &data[0], 0);
 
 	std::cout << "Saved screenshot as " << date << ".png\n";

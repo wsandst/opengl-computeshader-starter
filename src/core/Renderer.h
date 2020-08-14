@@ -26,24 +26,25 @@ typedef std::chrono::high_resolution_clock::time_point TimePoint;
 
 class Renderer {
 public:
+	//Render settings
 	const char* windowTitle = "OpenGL Experimental";
-    int windowWidth = 1000, windowHeight = 1000;
-	bool isFullscreen = false;
+	const bool VSYNCEnabled = false;
+	const int MSAALevel = 2; //MSAA Antialiasing: 1 for none, 2 for 4x, 4 for 16x
+	//Toggleables from within the engine
+	bool displayWireframes = false;
 	bool displayText = true;
 	bool displayDebugInfo = false;
-	bool textUpdateRequired = false;
-	//bool movementChange = false;
 
-	const bool VSYNCEnabled = false;
-	const int MSAALevel = 2; //MS Antialiasing: 1 for none, 2 for 4x, 4 for 16x
+	//Render variables
+	int windowWidth, windowHeight;
+	bool isFullscreen = false;
+	bool textUpdateRequired = false;
 
     float deltaTime = 0.0f;
 	float fps = 60;
 	float renderPerformanceMs = 0;
 
     Camera camera;
-
-	glm::vec3 textColor;
 
 	Renderer(int windowWidth, int windowHeight);
 
@@ -61,16 +62,6 @@ public:
 
 	void drawText();
 
-	int addText(std::string text, float x, float y, float scale, glm::vec3 color = {1.0, 1.0, 1.0});
-
-	void updateText(int id, std::string text);
-
-	void updateText(int id, std::string text, float x, float y);
-
-	void updateRealtimeTextContent();
-
-	void loadVBOs(std::vector<Mesh>& meshes);
-
 	void toggleFullscreen();
 
 	void resizeWindow(int width, int height);
@@ -79,15 +70,27 @@ public:
 
 	void screenshot();
 
+	int addText(std::string text, float x, float y, float scale, glm::vec3 color = {1.0, 1.0, 1.0});
+
+	void updateText(int id, std::string text);
+
+	void updateText(int id, std::string text, float x, float y);
+
+	void loadVBOs(std::vector<Mesh>& meshes);
+
 	void updateTextVBO(bool create=false);
+
 
 private:
 	int minimizedWidth = 1000, minimizedHeight = 1000;
 	int screenResHeight, screenResWidth;
+	TimePoint lastFrame;
+	TimePoint lastFPSframe;
 
 	SDL_Window *window;
     SDL_GLContext glContext;
 
+	//3D shader
     Shader geometryShader;
 	std::vector<GeometryVBO> geometryVBOs;
 	unsigned int texture;
@@ -98,12 +101,9 @@ private:
 	std::vector<TextObject> textObjects = std::vector<TextObject>();
 	TextVBO textVBO;
 	TextHandler textHandler;
-
+	//Freetype library instance, for text rendering
 	FT_Library freetype;
 	unsigned int textTexture;
-
-	TimePoint lastFrame;
-	TimePoint lastFPSframe;
 
     void initOpenGL();
 

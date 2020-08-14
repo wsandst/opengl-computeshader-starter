@@ -16,6 +16,7 @@ Shader::~Shader()
 {
 }
 
+///@brief Create the shader object. Load it from file and send it into OpenGL
 void Shader::create()
 {
 	std::string vertexCode = FileHandler::loadStrFile(vertexPath);
@@ -47,17 +48,32 @@ void Shader::create()
 	glDeleteShader(fragmentShader);
 }
 
+///@brief Hot reload this shader
 void Shader::reload()
 {
 	glDeleteProgram(ID);
 	create();
 }
 
+///@brief Use/Enable this OpenGL shader
 void Shader::use()
 {
 	glUseProgram(ID);
 }
 
+///@brief Print shader loading status, gives useful error messages if something is wrong
+void Shader::printIVSuccess(unsigned int shader, GLenum status)
+{
+	int shaderSuccess;
+	char infoLog[512];
+	glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderSuccess);
+	if (!shaderSuccess) {
+		glGetShaderInfoLog(shader, 512, NULL, infoLog);
+		std::cout << status << " FAILED:\n" << infoLog << std::endl;
+	}
+}
+
+//Functions for setting shader uniforms
 void Shader::setInt(std::string name, int value) const
 {
 	glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
@@ -116,16 +132,4 @@ void Shader::setMat3(const std::string &name, const glm::mat3 &mat) const
 void Shader::setMat4(const std::string &name, const glm::mat4 &mat) const
 {
 	glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
-}
-
-
-void Shader::printIVSuccess(unsigned int shader, GLenum status)
-{
-	int shaderSuccess;
-	char infoLog[512];
-	glGetShaderiv(shader, GL_COMPILE_STATUS, &shaderSuccess);
-	if (!shaderSuccess) {
-		glGetShaderInfoLog(shader, 512, NULL, infoLog);
-		std::cout << status << " FAILED:\n" << infoLog << std::endl;
-	}
 }

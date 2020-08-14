@@ -15,10 +15,12 @@ struct Texture
 	std::string name;
 };
 
+///@brief Static class which helps loading different file types
 class FileHandler
 {
 public:
 
+	///@brief Load a text file and return it as a string
 	static std::string loadStrFile(const char* path)
 	{
 
@@ -36,6 +38,7 @@ public:
 		return source;
 	}
 
+	///@brief Loads an image file using the stb_image library
 	static Texture loadImage(std::string filename, int channels = 3)
 	{
 		Texture texture;
@@ -54,6 +57,7 @@ public:
 		return texture;
 	}
 
+	///@brief Loads an obj (3d model) file using the tinyobj library
 	static std::vector<float> loadObj(std::string filename)
 	{
 		std::vector<float> vertices = std::vector<float>();
@@ -107,22 +111,6 @@ public:
 			}
 		}
 		return vertices;
-	}
-
-	static std::vector<std::string> stringSplit(std::string input, char delimiter)
-	{
-		std::vector<std::string> output;
-		size_t foundSymbolAt = 0;
-		size_t foundSymbolAtOld = -1;
-		int i = 0;
-		while (foundSymbolAt != -1)
-		{
-			foundSymbolAt = input.find(delimiter, (int)(foundSymbolAtOld + 1));
-			output.push_back(input.substr(foundSymbolAtOld + 1, foundSymbolAt - foundSymbolAtOld - 1));
-			foundSymbolAtOld = foundSymbolAt;
-			i++;
-		}
-		return output;
 	}
 
 	FileHandler() {};

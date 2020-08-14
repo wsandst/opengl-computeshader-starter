@@ -5,6 +5,7 @@
 
 #include "VBOWrapper.h"
 
+///@brief A struct representing an ASCII character loaded from font
 struct Character {
     glm::ivec2   size;       // Size of glyph
     glm::ivec2   bearing;    // Offset from baseline to left/top of glyph
@@ -12,6 +13,8 @@ struct Character {
 	float textureCoord;
 };
 
+///@brief A struct representing an individual text object which can have a different scale and color
+///Note: All text objects are combined to the same VBO in the end, so this struct is only used for organisation purposes
 struct TextObject
 {
 	int id;
@@ -34,7 +37,7 @@ struct TextObject
 	}
 };
 
-
+///@brief A class which helps with organisation various text related stuff. Mainly creates the text vertices for a text object
 class TextHandler
 {
 public:

@@ -8,8 +8,6 @@
 
 class InputHandler
 {
-private:
-	SDL_Event sdlEvent;
 public:
 	Camera& camera;
 	Renderer& renderer;
@@ -25,5 +23,8 @@ public:
 
 	InputHandler(Renderer& _renderer, Camera& _camera);
 	~InputHandler();
+private:
+	SDL_Event sdlEvent;
+	bool F3Pressed = false;
 };
 

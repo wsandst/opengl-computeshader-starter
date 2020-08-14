@@ -11,6 +11,7 @@
 
 #include <vector>
 
+///@brief 3D Geometry Vertex Attrib
 struct GeometryVertexAttrib {
 	float position[3];
 	float normal[3];
@@ -38,6 +39,7 @@ struct GeometryVertexAttrib {
 	}
 };
 
+///@brief VBO for rendering 3D Objects, meshes
 class GeometryVBO
 {
 public:
@@ -100,6 +102,7 @@ public:
 	}
 };
 
+///@brief Text Vertex Attrib
 struct TextVertexAttrib {
 	float position[2];
 	float uv[2];
@@ -129,7 +132,7 @@ struct TextVertexAttrib {
 	}
 };
 
-
+///@brief Text VBO which helps render text to the screen
 class TextVBO
 {
 public:

@@ -4,6 +4,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include <iostream>
 
+///@brief A class for representing the OpenGL camera
 class Camera
 {
 private:
@@ -12,19 +13,22 @@ private:
 	glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 	glm::mat4x4 viewMatrix, projectionMatrix;
 
-	float acceleration = 0.1;
 public:
+	//Camera settings
+	float sensitivity = 0.25f;
+	float maxVelocity = 0.25f;
+	float acceleration = 0.1;
 
+	//Camera variables
 	float FOV = 45.0f, yaw = -90.0f, pitch = 0.0f;
 	int windowWidth, windowHeight;
-	float sensitivity = 0.5f;
-	float maxVelocity = 0.25;
 	float cameraStep = 1;
 
 	glm::vec3 velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 
 	bool keyForward = false, keyBackward = false, keyRight = false, keyLeft = false, keyUp = false, keyDown = false;
 
+	///@brief Accelerate the velocity vector along the given directions, and make sure to not exceed maxVelocity in the pos direction
 	void accelerate(float x, float y, float z)
 	{
 		if (std::abs(velocity.x + x) <= maxVelocity)
@@ -35,6 +39,7 @@ public:
 			velocity.z = velocity.z + z;
 	}
 
+	///@brief Decelerate the velocity vector along the given directions, and make sure to not exceed maxVelocity in neg direction
 	void decelerate(float x, float y, float z)
 	{
 		if (std::abs(velocity.x - x) <= std::abs(velocity.x))
@@ -51,6 +56,7 @@ public:
 			velocity.z = 0;
 	}
 
+	///@brief Accelerate in the given direction if the given key is pressed, else decelerate in that direction
 	void moveKey(bool key, float ax, float ay, float az, float vc)
 	{
 		if (key)
@@ -59,6 +65,8 @@ public:
 			decelerate(ax, ay, az);
 	}
 
+	///@brief Main move function which accelerates/decelerate the camera velocity based on pressed keys
+	/// and then moves the camera based on the velocity
 	void move()
 	{
 		moveKey(keyRight, acceleration, 0, 0, velocity.x);
@@ -73,12 +81,14 @@ public:
 		cameraPos += cameraFront * cameraStep * velocity.z;
 	}
 
+	///@brief Modify the max velocity limit of the camera
 	void changeMaxVelocity(float factor)
 	{
 		maxVelocity *= factor;
 		acceleration *= factor;
 	}
 
+	///@brief Update the front vector, which controls the camera viewing angle
 	void updateView(float xOffset, float yOffset)
 	{
 		yaw += xOffset;
@@ -115,11 +125,13 @@ public:
 		return viewMatrix;
 	}
 
+	///@brief Calculate the camera projection matrix based on FOV, window width and height, and front/back culling distance
 	void calculateProjectionMatrix()
 	{
 		projectionMatrix = glm::perspective(glm::radians(FOV), (float)windowWidth / (float)windowHeight, 0.1f, 4000.0f);
 	}
 
+	///@brief Calculate the view matrix (camera rotation + position)
 	void calculateViewMatrix()
 	{
 		viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);

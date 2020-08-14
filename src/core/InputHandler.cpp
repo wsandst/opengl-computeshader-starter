@@ -2,6 +2,7 @@
 
 int count = 0;
 
+///@brief Input function, handles all input and the various actions connected to them
 void InputHandler::handleInput(float deltaTime)
 {
 	//Measure performance in debug mode
@@ -19,6 +20,7 @@ void InputHandler::handleInput(float deltaTime)
 		switch (sdlEvent.type) {
 		case SDL_KEYDOWN: //Key down event
 			switch (sdlEvent.key.keysym.sym) {
+
 			case SDLK_w: //Move forward
 				camera.keyForward = true;
 				break;
@@ -58,18 +60,22 @@ void InputHandler::handleInput(float deltaTime)
 				renderer.displayText = !renderer.displayText;
 				break;
 
-			case SDLK_F2:
+			case SDLK_F2: //Take screenshot
 				std::cout << "F2: Taking screenshot\n";
 				renderer.screenshot();
 				break;
 
 			case SDLK_F3: //Toggle coordinate display
-			{
 				std::cout << "F3: Debug display toggled\n";
 				renderer.displayDebugInfo = !renderer.displayDebugInfo;
 				renderer.textUpdateRequired	= true;
+				F3Pressed = true;
 				break;
-			}
+
+			case SDLK_F4: //Toggle wireframes
+				std::cout << "F4: Wireframes toggled\n";
+				renderer.displayWireframes = !renderer.displayWireframes;
+				break;
 
 			case SDLK_F11: //Toggle fullscreen
 				std::cout << "F11: Fullscreen toggled" << "\n";
@@ -114,6 +120,9 @@ void InputHandler::handleInput(float deltaTime)
 			case SDLK_LCTRL:
 				camera.keyDown = false;
 				break;
+			case SDLK_F3:
+				F3Pressed = false;
+				break;
 			}
 		
 		}
@@ -124,6 +133,7 @@ void InputHandler::handleInput(float deltaTime)
 			{
 				int relativeX, relativeY;
 				SDL_GetRelativeMouseState(&relativeX, &relativeY);
+				//std::cout << relativeX << " " << relativeY << "\n";
 
 				camera.updateView(relativeX * sensitivity, -relativeY * sensitivity);
 			}
