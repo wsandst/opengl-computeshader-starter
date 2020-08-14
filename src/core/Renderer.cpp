@@ -25,11 +25,12 @@ Renderer::~Renderer()
 
 void Renderer::updateDeltatime()
 {
-	float currentFrame = SDL_GetTicks();
-	deltaTime = currentFrame - lastFrame;
+	TimePoint currentFrame = std::chrono::high_resolution_clock::now();
+	deltaTime = std::chrono::duration_cast<std::chrono::microseconds>(currentFrame - lastFrame).count() / 1000.0f;
 
 	lastFrame = currentFrame;
-	if (currentFrame - lastFPSframe > 1000) //Calculate average fps every second
+	//Calculate average fps every 0.5 seconds
+	if (std::chrono::duration_cast<std::chrono::milliseconds>(currentFrame - lastFPSframe).count() > 1000)
 	{
 		fps = 1000 / deltaTime;
 		lastFPSframe = currentFrame;

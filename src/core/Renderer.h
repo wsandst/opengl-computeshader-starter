@@ -87,8 +87,6 @@ private:
 
 	SDL_Window *window;
     SDL_GLContext glContext;
-    float lastFrame = 0.0f;
-	float lastFPSframe = 0.0f;
 
     Shader geometryShader;
 	std::vector<GeometryVBO> geometryVBOs;
@@ -104,7 +102,8 @@ private:
 	FT_Library freetype;
 	unsigned int textTexture;
 
-	std::clock_t renderTimer;
+	TimePoint lastFrame;
+	TimePoint lastFPSframe;
 
     void initOpenGL();
 
