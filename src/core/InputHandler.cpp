@@ -4,6 +4,11 @@ int count = 0;
 
 void InputHandler::handleInput(float deltaTime)
 {
+	//Measure performance in debug mode
+	TimePoint beginTime;
+	if (renderer.displayDebugInfo)
+		beginTime = std::chrono::high_resolution_clock::now();
+
 	camera.cameraStep = 0.05f * deltaTime;
 	float xOffset, yOffset;
 
@@ -60,11 +65,9 @@ void InputHandler::handleInput(float deltaTime)
 
 			case SDLK_F3: //Toggle coordinate display
 			{
-				std::cout << "F3: Coordinate display toggled\n";
-				std::cout << "Camera pos: x: " << camera.getPosition().x << " y: " << camera.getPosition().y << " z: " << camera.getPosition().z << "\n";
+				std::cout << "F3: Debug display toggled\n";
 				renderer.displayDebugInfo = !renderer.displayDebugInfo;
-				if (!renderer.displayDebugInfo)
-					renderer.updateText(2, "");
+				renderer.textUpdateRequired	= true;
 				break;
 			}
 
@@ -73,7 +76,7 @@ void InputHandler::handleInput(float deltaTime)
 				renderer.toggleFullscreen();
 				break;
 
-			case SDLK_ESCAPE:
+			case SDLK_ESCAPE: //Unfocus window
 				windowContext = !windowContext;
 				if (windowContext) {
 					SDL_ShowCursor(0);
@@ -127,12 +130,11 @@ void InputHandler::handleInput(float deltaTime)
 			break;
 		case SDL_WINDOWEVENT:
 			switch (sdlEvent.window.event) {
-			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_WINDOWEVENT_RESIZED: //Resizing window
 				renderer.resizeWindow(sdlEvent.window.data1, sdlEvent.window.data2);
-				printf("Window size changed to %dx%d \n",
-					sdlEvent.window.data1,
-					sdlEvent.window.data2);
+				std::cout << "Window size changed to " << sdlEvent.window.data1 << "x" << sdlEvent.window.data2 << "\n";
 				break;
+
 			case SDL_WINDOWEVENT_CLOSE: //Exiting program
 				std::cout << "Exiting program" << "\n";
 				exit = true;
@@ -143,6 +145,9 @@ void InputHandler::handleInput(float deltaTime)
 	}
 
 	camera.move();
+
+	if (renderer.displayDebugInfo)
+		inputPerformanceMs = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - beginTime ).count() / 1000.0f;
 }
 
 InputHandler::InputHandler(Renderer& _renderer, Camera& _camera) : camera(_camera), renderer(_renderer)

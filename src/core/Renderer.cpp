@@ -2,14 +2,21 @@
 #define GLEW_STATIC
 #include "GL/glew.h"
 
+//Todo
+//Pretty up code, split up DebugHandler into a few more functions. Add comments
+//total ms timing as well as switch from using SDL2 deltatime to using own deltatime. Frame rate limiter as well?
+//Add color vertex attribute to text
+
 Renderer::Renderer(int windowWidth, int windowHeight)
 {
 	this->windowWidth = windowWidth;
 	this->windowHeight = windowHeight;
+	init();
 }
 
 Renderer::Renderer()
 {
+	init();
 }
 
 Renderer::~Renderer()
@@ -20,8 +27,9 @@ void Renderer::updateDeltatime()
 {
 	float currentFrame = SDL_GetTicks();
 	deltaTime = currentFrame - lastFrame;
+
 	lastFrame = currentFrame;
-	if (currentFrame - lastFPSframe > 1000)
+	if (currentFrame - lastFPSframe > 1000) //Calculate average fps every second
 	{
 		fps = 1000 / deltaTime;
 		lastFPSframe = currentFrame;
@@ -30,6 +38,12 @@ void Renderer::updateDeltatime()
 
 void Renderer::render()
 {
+	//Measure render time, only if debug mode enabled
+	TimePoint beginTime;
+	if (displayDebugInfo)
+		beginTime = std::chrono::high_resolution_clock::now();
+
+	//Clear screen color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	camera.calculateProjectionMatrix();
 	camera.calculateViewMatrix();
@@ -40,6 +54,10 @@ void Renderer::render()
 		drawText();
 
 	SDL_GL_SwapWindow(window);
+
+	//Measure render time, only if debug mode enabled
+	if (displayDebugInfo)
+		renderPerformanceMs = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - beginTime ).count() / 1000.0f;
 }
 
 void Renderer::draw()
@@ -117,7 +135,9 @@ void Renderer::initSDL()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetSwapInterval(1);
+
+	//VSYNC
+	SDL_GL_SetSwapInterval(VSYNCEnabled);
 }
 
 ///@brief Initializes the freetype library and loads a font into a texture atlas with the help of the class TextHandler, later used for text rendering
@@ -264,6 +284,7 @@ void Renderer::resizeWindow(int width, int height)
 	windowWidth = width;
 	windowHeight = height;
 	updateResolution();
+	textUpdateRequired	= true;
 }
 
 void Renderer::centerWindow()
@@ -274,11 +295,12 @@ void Renderer::centerWindow()
 }
 
 ///@brief Add a new text object at the specified positon and scale
-void Renderer::addText(std::string text, float x, float y, float scale)
+int Renderer::addText(std::string text, float x, float y, float scale)
 {
 	std::vector<TextVertexAttrib> attribs = textHandler.createTextVertices(text, x, y, scale);
 	TextObject textObject = TextObject(textObjects.size(), x, y, scale, text, attribs);
 	textObjects.push_back(textObject);
+	return textObjects.size() - 1;
 }
 
 ///@brief Update an existing text object based on index, ie order added. Pos overload
@@ -286,9 +308,6 @@ void Renderer::updateText(int id, std::string text)
 {
 	TextObject& textObject = textObjects[id];
 	textObject.vertices = textHandler.createTextVertices(text, textObject.x, textObject.y, textObject.scale);
-
-	//For several text updating every frame, do this at the end, not at every update
-	updateTextVBO();
 }
 
 ///@brief Same as above. Pos overload

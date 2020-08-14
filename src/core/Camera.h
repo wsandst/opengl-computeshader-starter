@@ -84,6 +84,11 @@ public:
 		yaw += xOffset;
 		pitch += yOffset;
 
+		if (yaw < 0)
+			yaw = 360 + yaw;
+
+		yaw = fmod(yaw, 360.0f);
+
 		if (pitch > 89.0f)
 			pitch = 89.0f;
 		if (pitch < -89.0f)
@@ -123,6 +128,20 @@ public:
 	glm::vec3& getPosition()
 	{
 		return cameraPos;
+	}
+
+	///@brief Returns a string of the cardinal viewing direction, ie north/south/east/west
+	std::string getCardinalDirection()
+	{
+		if (225 <= yaw && yaw <= 315) //-z
+			return "NORTH";
+		else if (135 <= yaw && yaw <= 225) //-x
+			return "EAST";
+		else if (45 <= yaw && yaw <= 135) //+z
+			return "SOUTH";
+		else if (yaw <= 45 || yaw >= 315) //+x
+			return "WEST";
+		return "ERROR";
 	}
 
 	Camera(int windowWidth, int windowHeight)

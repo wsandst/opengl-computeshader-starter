@@ -8,10 +8,12 @@
 
 #include "stb_image_write.h"
 
-#include "Renderer.h"
-#include "InputHandler.h"
 #include <iostream>
 #include <ctime>
+
+#include "Renderer.h"
+#include "InputHandler.h"
+#include "DebugHandler.h"
 
 int windowWidth = 1000;
 int windowHeight = 1000;
@@ -20,13 +22,12 @@ int main(int argc, char** argv)
 {
 	bool quit = false;
 
+	//Main class instances
 	Renderer renderer(windowWidth, windowHeight);
 	InputHandler inputHandler(renderer, renderer.camera);
+	DebugHandler debugHandler(inputHandler, renderer);
 
-	int frameCount = 0;
-
-	renderer.init();
-
+	//Load a model and a texture
 	std::vector<float> vertices = FileHandler::loadObj("diablo.obj");
 	Texture texture = FileHandler::loadImage("diablo.png");
 	Mesh diablo = Mesh(glm::vec3{ 0, 0, 0 }, vertices, texture);
@@ -34,27 +35,25 @@ int main(int argc, char** argv)
 	std::vector<Mesh> meshes = std::vector<Mesh>();
 	meshes.push_back(diablo);
 
-	renderer.addText("wsandst demo", 15, 15, 1.0f);
-
-	//FPS counter
-	renderer.addText("60", renderer.camera.windowWidth-50, renderer.camera.windowHeight-40, 1.0f);
-	//Placeholder for coordinate display toggle
-	renderer.addText("", 20, renderer.camera.windowHeight-30, 0.6f);
-
+	//Add some static text
+	int demoTextID = renderer.addText("wsandst demo", 15, 15, 1.0f);
 	renderer.textColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	renderer.loadVBOs(meshes);
-	//Color could be stored as vertex input. Even scale might work that way.
-	//A Text class for every separate text part. This class keeps track of where the vertices are stored. If modified, subBuffer change
 
+	int frameCount = 0;
+
+	//Main event loop
 	while (!quit) {
 		
-		if (inputHandler.windowContext) {
-			renderer.render();
-			if (frameCount % 15 == 0)
+		if (inputHandler.windowContext) { //Window in focus, render frames
+			if (frameCount % 15 == 0 || renderer.textUpdateRequired) //Update debug text every 15 frames, or if a text update is requested by the renderer
 			{
-				renderer.updateRealtimeTextContent();
+				debugHandler.updateText();
 			}
+
+			//Render
+			renderer.render();
 
 			frameCount++;
 		}
@@ -62,10 +61,12 @@ int main(int argc, char** argv)
 		{
 			quit = true;
 		}
+		//Input handling
 		inputHandler.handleInput(renderer.deltaTime);
 		renderer.updateDeltatime();
 	}
 
+	//Exit program
 	renderer.close();
 	return 0;
 }

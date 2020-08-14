@@ -4,18 +4,22 @@
 #include "SDL.h"
 
 #include <string>
+#include <chrono>
 
 class InputHandler
 {
 private:
 	SDL_Event sdlEvent;
 public:
+	Camera& camera;
+	Renderer& renderer;
+
 	float sensitivity = 0.5;
 	bool exit = false;
 	bool windowContext = true;
 
-	Camera& camera;
-	Renderer& renderer;
+	//For performance measuring
+	float inputPerformanceMs;
 
 	void handleInput(float deltaTime);
 

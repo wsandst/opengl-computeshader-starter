@@ -19,9 +19,10 @@
 #include "TextHandler.h"
 
 #include <vector>
-#include <unordered_map>
 #include <algorithm>
-#include <ctime>
+#include <chrono>
+
+typedef std::chrono::high_resolution_clock::time_point TimePoint;
 
 class Renderer {
 public:
@@ -30,12 +31,15 @@ public:
 	bool isFullscreen = false;
 	bool displayText = true;
 	bool displayDebugInfo = false;
+	bool textUpdateRequired = false;
 	//bool movementChange = false;
 
+	const bool VSYNCEnabled = false;
 	const int MSAALevel = 2; //MS Antialiasing: 1 for none, 2 for 4x, 4 for 16x
 
     float deltaTime = 0.0f;
 	float fps = 60;
+	float renderPerformanceMs = 0;
 
     Camera camera;
 
@@ -57,7 +61,7 @@ public:
 
 	void drawText();
 
-	void addText(std::string text, float x, float y, float scale);
+	int addText(std::string text, float x, float y, float scale);
 
 	void updateText(int id, std::string text);
 
@@ -74,6 +78,8 @@ public:
 	void requestShaderReload();
 
 	void screenshot();
+
+	void updateTextVBO(bool create=false);
 
 private:
 	int minimizedWidth = 1000, minimizedHeight = 1000;
@@ -98,6 +104,8 @@ private:
 	FT_Library freetype;
 	unsigned int textTexture;
 
+	std::clock_t renderTimer;
+
     void initOpenGL();
 
     void initSDL();
@@ -111,8 +119,6 @@ private:
 	void centerWindow();
 
 	void updateResolution();
-
-	void updateTextVBO(bool create=false);
 
 };
 
