@@ -400,7 +400,8 @@ void Renderer::screenshot()
 		 + "_"
 		 + (now->tm_hour < 10 ? "0" : "") + std::to_string(now->tm_hour)
 		 + (now->tm_min < 10 ? "0" : "") + std::to_string(now->tm_min)
-		 + (now->tm_sec < 10 ? "0" : "") + std::to_string(now->tm_sec);
+		 + (now->tm_sec < 10 ? "0" : "") + std::to_string(now->tm_sec)
+		 + ".png";
 
 	///OpenGL screen is flipped vertically
 	stbi_flip_vertically_on_write(1);
