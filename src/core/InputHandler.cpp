@@ -36,7 +36,7 @@ void InputHandler::handleInput(float deltaTime)
 			case SDLK_SPACE: //Move up
 				camera.keyUp = true;
 				break;
-			case SDLK_LCTRL: //Move down
+			case SDLK_LSHIFT: //Move down
 				camera.keyDown = true;
 				break;
 
@@ -117,7 +117,7 @@ void InputHandler::handleInput(float deltaTime)
 			case SDLK_SPACE:
 				camera.keyUp = false;
 				break;
-			case SDLK_LCTRL:
+			case SDLK_LSHIFT:
 				camera.keyDown = false;
 				break;
 			case SDLK_F3:
