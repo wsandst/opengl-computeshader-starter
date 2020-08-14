@@ -61,7 +61,7 @@ public:
 
 	void drawText();
 
-	int addText(std::string text, float x, float y, float scale);
+	int addText(std::string text, float x, float y, float scale, glm::vec3 color = {1.0, 1.0, 1.0});
 
 	void updateText(int id, std::string text);
 

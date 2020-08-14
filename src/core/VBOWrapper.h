@@ -103,22 +103,29 @@ public:
 struct TextVertexAttrib {
 	float position[2];
 	float uv[2];
+	char color[3];
 
 	TextVertexAttrib() {
 
 	}
 
-	TextVertexAttrib(float x, float y, float u, float v) {
+	TextVertexAttrib(float x, float y, float u, float v, float r = 1.0, float g = 1.0, float b = 1.0) {
 		position[0] = x;
 		position[1] = y;
 		uv[0] = u;
 		uv[1] = v;
+		color[0] = r * 255;
+		color[1] = g * 255;
+		color[2] = b * 255;
 	}
-	TextVertexAttrib(glm::vec2& pos, glm::vec2 uv) {
+	TextVertexAttrib(glm::vec2& pos, glm::vec2 uv, glm::vec3 color = {1.0, 1.0, 1.0}) {
 		position[0] = pos.x;
 		position[1] = pos.y;
 		uv[0] = uv.x;
 		uv[1] = uv.y;
+		color[0] = color.x * 255;
+		color[1] = color.y * 255;
+		color[2] = color.z * 255;
 	}
 };
 
@@ -161,6 +168,9 @@ public:
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(TextVertexAttrib), (void*)offsetof(TextVertexAttrib, uv));
 		glEnableVertexAttribArray(1);
 
+		//Colors
+		glVertexAttribPointer(2, 3, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(TextVertexAttrib), (void*)offsetof(TextVertexAttrib, color));
+		glEnableVertexAttribArray(2);
 	}
 	void update(std::vector<TextVertexAttrib>& vertices)
 	{

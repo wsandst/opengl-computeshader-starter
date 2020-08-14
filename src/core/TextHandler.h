@@ -17,15 +17,17 @@ struct TextObject
 	int id;
 	float x, y;
 	float scale;
+    glm::vec3 color;
 	std::string content;
 
 	std::vector<TextVertexAttrib> vertices = std::vector<TextVertexAttrib>();
 
-	TextObject(int id, float x, float y, float scale, std::string content, std::vector<TextVertexAttrib> &vertices)
+	TextObject(int id, float x, float y, float scale, glm::vec3 color, std::string content, std::vector<TextVertexAttrib> &vertices)
 	{
 		this->id = id;
 		this->x = x;
 		this->y = y;
+        this->color = color;
 		this->scale = scale;
 		this->content = content;
 		this->vertices = vertices;
@@ -39,7 +41,7 @@ public:
     unsigned int textAtlasWidth, textAtlasHeight;
     Character characters[128];
 
-    std::vector<TextVertexAttrib> createTextVertices(std::string text, float x, float y, float scale)
+    std::vector<TextVertexAttrib> createTextVertices(std::string text, float x, float y, float scale, glm::vec3 color)
     {
         std::vector<TextVertexAttrib> attribs;
         attribs.reserve(6 * text.size());
@@ -76,12 +78,12 @@ public:
             if(!w || !h)
                 continue;
 
-            attribs.push_back(TextVertexAttrib(x2,     -y2    , ch.textureCoord,                                            0.0f));
-            attribs.push_back(TextVertexAttrib(x2 + w, -y2    , ch.textureCoord + float(ch.size[0]) / textAtlasWidth - halfPixelAdjustment,   0.0f));
-            attribs.push_back(TextVertexAttrib(x2,     -y2 - h, ch.textureCoord,                                          float(ch.size[1]) / textAtlasHeight));
-            attribs.push_back(TextVertexAttrib(x2 + w, -y2    , ch.textureCoord + float(ch.size[0]) / textAtlasWidth - halfPixelAdjustment,   0.0f));
-            attribs.push_back(TextVertexAttrib(x2,     -y2 - h, ch.textureCoord,                                          float(ch.size[1]) / textAtlasHeight));
-            attribs.push_back(TextVertexAttrib(x2 + w, -y2 - h, ch.textureCoord + float(ch.size[0]) / textAtlasWidth - halfPixelAdjustment,  float(ch.size[1]) / textAtlasHeight));
+            attribs.push_back(TextVertexAttrib(x2,     -y2    , ch.textureCoord,                                            0.0f, color.x, color.y, color.z));
+            attribs.push_back(TextVertexAttrib(x2 + w, -y2    , ch.textureCoord + float(ch.size[0]) / textAtlasWidth - halfPixelAdjustment,   0.0f, color.x, color.y, color.z));
+            attribs.push_back(TextVertexAttrib(x2,     -y2 - h, ch.textureCoord,                                          float(ch.size[1]) / textAtlasHeight, color.x, color.y, color.z));
+            attribs.push_back(TextVertexAttrib(x2 + w, -y2    , ch.textureCoord + float(ch.size[0]) / textAtlasWidth - halfPixelAdjustment,   0.0f, color.x, color.y, color.z));
+            attribs.push_back(TextVertexAttrib(x2,     -y2 - h, ch.textureCoord,                                          float(ch.size[1]) / textAtlasHeight, color.x, color.y, color.z));
+            attribs.push_back(TextVertexAttrib(x2 + w, -y2 - h, ch.textureCoord + float(ch.size[0]) / textAtlasWidth - halfPixelAdjustment,  float(ch.size[1]) / textAtlasHeight, color.x, color.y, color.z));
 
         }
         return attribs;

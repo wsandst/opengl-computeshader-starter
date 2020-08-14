@@ -37,7 +37,6 @@ int main(int argc, char** argv)
 
 	//Add some static text
 	int demoTextID = renderer.addText("wsandst demo", 15, 15, 1.0f);
-	renderer.textColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	renderer.loadVBOs(meshes);
 
@@ -47,7 +46,7 @@ int main(int argc, char** argv)
 	while (!quit) {
 		
 		if (inputHandler.windowContext) { //Window in focus, render frames
-			if (frameCount % 15 == 0 || renderer.textUpdateRequired) //Update debug text every 15 frames, or if a text update is requested by the renderer
+			if (frameCount % 30 == 0 || renderer.textUpdateRequired) //Update debug text every 15 frames, or if a text update is requested by the renderer
 			{
 				debugHandler.updateText();
 			}

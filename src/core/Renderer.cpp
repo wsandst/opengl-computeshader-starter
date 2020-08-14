@@ -4,7 +4,6 @@
 
 //Todo
 //Pretty up code, split up DebugHandler into a few more functions. Add comments
-//total ms timing as well as switch from using SDL2 deltatime to using own deltatime. Frame rate limiter as well?
 //Add color vertex attribute to text
 
 Renderer::Renderer(int windowWidth, int windowHeight)
@@ -296,10 +295,10 @@ void Renderer::centerWindow()
 }
 
 ///@brief Add a new text object at the specified positon and scale
-int Renderer::addText(std::string text, float x, float y, float scale)
+int Renderer::addText(std::string text, float x, float y, float scale, glm::vec3 color)
 {
-	std::vector<TextVertexAttrib> attribs = textHandler.createTextVertices(text, x, y, scale);
-	TextObject textObject = TextObject(textObjects.size(), x, y, scale, text, attribs);
+	std::vector<TextVertexAttrib> attribs = textHandler.createTextVertices(text, x, y, scale, color);
+	TextObject textObject = TextObject(textObjects.size(), x, y, scale, color, text, attribs);
 	textObjects.push_back(textObject);
 	return textObjects.size() - 1;
 }
@@ -308,7 +307,7 @@ int Renderer::addText(std::string text, float x, float y, float scale)
 void Renderer::updateText(int id, std::string text)
 {
 	TextObject& textObject = textObjects[id];
-	textObject.vertices = textHandler.createTextVertices(text, textObject.x, textObject.y, textObject.scale);
+	textObject.vertices = textHandler.createTextVertices(text, textObject.x, textObject.y, textObject.scale, textObject.color);
 }
 
 ///@brief Same as above. Pos overload
@@ -317,7 +316,7 @@ void Renderer::updateText(int id, std::string text, float x, float y)
 	TextObject& textObject = textObjects[id];
 	textObject.x = x;
 	textObject.y = y;
-	textObject.vertices = textHandler.createTextVertices(text, textObject.x, textObject.y, textObject.scale);
+	textObject.vertices = textHandler.createTextVertices(text, textObject.x, textObject.y, textObject.scale, textObject.color);
 }
 
 ///@brief Update the text vertex buffer object with new data

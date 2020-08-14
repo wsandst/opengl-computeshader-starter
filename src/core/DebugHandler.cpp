@@ -53,7 +53,7 @@ void DebugHandler::updateText()
         upperLeftContent << "yaw: " << renderer.camera.yaw << ", ";
         upperLeftContent << "pitch: " << renderer.camera.pitch << "\n";
         upperLeftContent.precision(2);
-        upperLeftContent << "performance:\n";
+        upperLeftContent << "performance: " << renderer.deltaTime << "ms\n";
         upperLeftContent << "render: " << renderer.renderPerformanceMs << " ms\n";
         upperLeftContent << "input: " << inputHandler.inputPerformanceMs << " ms\n";
         upperLeftContent << "debugtext: " << debugPerformanceMs << " ms\n";
