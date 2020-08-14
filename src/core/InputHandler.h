@@ -17,7 +17,7 @@ public:
 	bool windowContext = true;
 
 	//For performance measuring
-	float inputPerformanceMs;
+	float inputPerformanceMs = 0;
 
 	void handleInput(float deltaTime);
 

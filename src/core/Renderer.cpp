@@ -156,7 +156,7 @@ void Renderer::initFreetype()
 	if (FT_New_Face(freetype, "assets/fonts/OpenSans-Regular.ttf", 0, &face))
 		std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;  
 	else
-		std::cout << "Loaded OpenSans font" << std::endl;
+		std::cout << "Loaded font: " << "OpenSans" << std::endl;
 
 	FT_Set_Pixel_Sizes(face, 0, 24);  
   
@@ -175,7 +175,6 @@ void Renderer::initFreetype()
 	}
 
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1); // disable byte-alignment restriction
-	std::cout << w << "," << h << std::endl;
 
 	glActiveTexture(GL_TEXTURE0);
 	glGenTextures(1, &textTexture);

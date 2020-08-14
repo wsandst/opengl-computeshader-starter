@@ -156,7 +156,7 @@ void InputHandler::handleInput(float deltaTime)
 
 	camera.move();
 
-	if (renderer.displayDebugInfo)
+	if (renderer.displayDebugInfo && !F3Pressed)
 		inputPerformanceMs = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - beginTime ).count() / 1000.0f;
 }
 
