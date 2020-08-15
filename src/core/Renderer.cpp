@@ -56,25 +56,48 @@ void Renderer::render()
 		renderPerformanceMs = std::chrono::duration_cast<std::chrono::microseconds>( std::chrono::high_resolution_clock::now() - beginTime ).count() / 1000.0f;
 }
 
-///@brief Draw the Geometry VBOs to the screen
 void Renderer::draw()
 {
-	if (displayWireframes)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	screenComputeShader.use();
 
-	geometryShader.use();
+	int framebufferTexLocation = glGetUniformLocation(screenComputeShader.ID, "framebuffer");
+	glUniform1i(framebufferTexLocation, 0);
 
-	for (auto& it : geometryVBOs) { //Draw chunks
-		glm::mat4 matrix = glm::mat4(camera.getProjectionMatrix() * camera.getViewMatrix() * it.translation);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureOutput);
 
-		glBindTexture(GL_TEXTURE_2D, texture);
-		geometryShader.setMat4("matrix", matrix);
-		glBindVertexArray(it.VAO);
-		glDrawArrays(GL_TRIANGLES, 0, it.size);
-	}
+	 // launch compute shaders!
+	glDispatchCompute((GLuint)windowWidth*MSAALevel, (GLuint)windowHeight*MSAALevel, 1);
+	
+	// make sure writing to image has finished before read
+	glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
-	if (displayWireframes)
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+	glActiveTexture(GL_TEXTURE0);
+	screenTextureShader.use();
+	glBindVertexArray(VAO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+}
+
+void Renderer::initScreenComputeShader()
+{ 
+	screenComputeShader = ComputeShader("shaders/computeshader.comp");
+
+	screenTextureShader = Shader("shaders/screentexture.vert", "shaders/screentexture.frag");
+	textShader = Shader("shaders/text.vert", "shaders/text.frag");
+
+	//Compute shader
+	// dimensions of the image
+	glGenTextures(1, &textureOutput);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, textureOutput);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, windowWidth*MSAALevel, windowHeight*MSAALevel, 0, GL_RGBA, GL_FLOAT,
+		NULL);
+	glBindImageTexture(0, textureOutput, 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 }
 
 ///@brief Initiate the window, OpenGL and the FreeType font library
@@ -86,7 +109,7 @@ void Renderer::init()
 	initOpenGL();
 	initFreetype();
 
-	initGeometry();
+	initScreenComputeShader();
 
 }
 
@@ -132,7 +155,7 @@ void Renderer::initSDL()
 	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, MSAALevel*MSAALevel);
 	glEnable(GL_MULTISAMPLE);
 
-	window = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+	window = SDL_CreateWindow(windowTitle, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, windowWidth, windowHeight, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 	glContext = SDL_GL_CreateContext(window);
 
 	SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -216,40 +239,19 @@ void Renderer::initFreetype()
 	FT_Done_FreeType(freetype);
 }
 
-///@brief Initiate the needed components for 3D geometry rendering
-void Renderer::initGeometry()
-{
-	geometryShader = Shader("shaders/geometry.vert", "shaders/geometry.frag");
-	textShader = Shader("shaders/text.vert", "shaders/text.frag");
-}
-
 ///@brief Hot reload the shaders
 void Renderer::requestShaderReload()
 {
-	geometryShader.reload();
+	screenTextureShader.reload();
 	textShader.reload();
+	screenComputeShader.reload();
 }
 
 ///@brief Load the Geometry VBO/VBOs and the text VBO
-void Renderer::loadVBOs(std::vector<Mesh>& meshes)
+void Renderer::loadVBOs()
 {
-	/*for (auto &mesh : meshes)
-	{
-		geometryVBOs.push_back(GeometryVBO(mesh.pos, mesh.vertices));
-	}*/
-
-	geometryVBOs.push_back(GeometryVBO(meshes[0].pos, meshes[0].vertices));
-
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_2D, texture);
-
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, meshes[0].texture.width, meshes[0].texture.height, 0, GL_RGB, GL_UNSIGNED_BYTE, meshes[0].texture.data);
-	glGenerateMipmap(GL_TEXTURE_2D);
-	stbi_image_free(meshes[0].texture.data);
-
 	//Create and update the text VBOS
 	updateTextVBO(true);
-
 }
 
 ///@brief Toggle SDL2 fullscreen, set the appropriate resolution

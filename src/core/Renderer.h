@@ -12,10 +12,10 @@
 
 #include "stb_image_write.h"
 
+#include "ComputeShader.h"
 #include "Shader.h"
 #include "Camera.h"
 #include "VBOWrapper.h"
-#include "Mesh.h"
 #include "TextHandler.h"
 
 #include <vector>
@@ -29,7 +29,7 @@ public:
 	//Render settings
 	const char* windowTitle = "OpenGL Compute Shader Starter";
 	const bool VSYNCEnabled = true;
-	const int MSAALevel = 4; //MSAA Antialiasing: 1 for none, 2 for 4x, 4 for 16x
+	const int MSAALevel = 1; //MSAA Antialiasing: 1 for none, 2 for 4x, 4 for 16x
 	//Toggleables from within the engine
 	bool displayWireframes = false;
 	bool displayText = true;
@@ -76,7 +76,7 @@ public:
 
 	void updateText(int id, std::string text, float x, float y);
 
-	void loadVBOs(std::vector<Mesh>& meshes);
+	void loadVBOs();
 
 	void updateTextVBO(bool create=false);
 
@@ -90,11 +90,11 @@ private:
 	SDL_Window *window;
     SDL_GLContext glContext;
 
-	//3D shader
-    Shader geometryShader;
-	std::vector<GeometryVBO> geometryVBOs;
-	unsigned int texture;
-	unsigned int VBO, VAO;
+	ComputeShader screenComputeShader;
+
+	//Vertex + fragment shader which covers the screen in a texture
+    Shader screenTextureShader;
+	unsigned int VAO, VBO, textureOutput, skyboxTex;
 
 	//Text related
 	Shader textShader;
@@ -111,7 +111,7 @@ private:
 
 	void initFreetype();
 
-	void initGeometry();
+	void initScreenComputeShader();
 
 	void draw();
 

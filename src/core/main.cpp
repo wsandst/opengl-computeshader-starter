@@ -27,18 +27,10 @@ int main(int argc, char** argv)
 	InputHandler inputHandler(renderer, renderer.camera);
 	DebugHandler debugHandler(inputHandler, renderer);
 
-	//Load a model and a texture
-	std::vector<float> vertices = FileHandler::loadObj("diablo.obj");
-	Texture texture = FileHandler::loadImage("diablo.png");
-	Mesh diablo = Mesh(glm::vec3{ 0, 0, 0 }, vertices, texture);
-
-	std::vector<Mesh> meshes = std::vector<Mesh>();
-	meshes.push_back(diablo);
-
 	//Add some static text
 	int demoTextID = renderer.addText("wsandst demo", 15, 15, 1.0f);
 
-	renderer.loadVBOs(meshes);
+	renderer.loadVBOs();
 
 	int frameCount = 0;
 

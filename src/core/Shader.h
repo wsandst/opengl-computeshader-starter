@@ -1,12 +1,9 @@
 #pragma once
 
-
 #include <string>
 #include <iostream>
 #include <fstream>
 #include <sstream>
-
-#include "FileHandler.h"
 
 #define GLEW_STATIC
 #include "GL/glew.h"
@@ -14,6 +11,8 @@
 #include "glm/glm.hpp"
 
 #include "SDL_opengl.h"
+
+#include "FileHandler.h"
 
 class Shader
 {

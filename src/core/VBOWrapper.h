@@ -12,35 +12,25 @@
 #include <vector>
 
 ///@brief 3D Geometry Vertex Attrib
-struct GeometryVertexAttrib {
+struct ScreenTexVertexAttrib {
 	float position[3];
 	float normal[3];
 	float uv[2];
 
-	GeometryVertexAttrib(float x, float y, float z, float nx, float ny, float nz, float u, float v) {
+	ScreenTexVertexAttrib(float x, float y, float z) {
 		position[0] = x;
 		position[1] = y;
 		position[2] = z;
-		normal[0] = nx;
-		normal[1] = ny;
-		normal[2] = nz;
-		uv[0] = u;
-		uv[1] = v;
 	}
-	GeometryVertexAttrib(glm::vec3& pos, glm::vec3& normal, glm::vec2 uv) {
+	ScreenTexVertexAttrib(glm::vec3& pos) {
 		position[0] = pos.x;
 		position[1] = pos.y;
 		position[2] = pos.z;
-		normal[0] = normal.x;
-		normal[1] = normal.y;
-		normal[2] = normal.z;
-		uv[0] = uv.x;
-		uv[1] = uv.y;
 	}
 };
 
 ///@brief VBO for rendering 3D Objects, meshes
-class GeometryVBO
+class ScreenTexVBO
 {
 public:
 	unsigned int VBO;
@@ -48,16 +38,16 @@ public:
 	glm::mat4 translation;
 	int size;
 
-	GeometryVBO() {};
-	GeometryVBO(glm::vec3 pos, std::vector<GeometryVertexAttrib>& vertices)
+	ScreenTexVBO() {};
+	ScreenTexVBO(glm::vec3 pos, std::vector<ScreenTexVertexAttrib>& vertices)
 	{
 		create(vertices);
 		setPosition(pos);
 	};
-	~GeometryVBO()
+	~ScreenTexVBO()
 	{
 	};
-	void create(std::vector<GeometryVertexAttrib>& vertices)
+	void create(std::vector<ScreenTexVertexAttrib>& vertices)
 	{
 		size = vertices.size();
 		glGenVertexArrays(1, &VAO);
@@ -67,23 +57,15 @@ public:
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		if (vertices.size() > 0)
 		{
-			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GeometryVertexAttrib), &vertices[0], GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(ScreenTexVertexAttrib), &vertices[0], GL_STATIC_DRAW);
 		}
 
 		//Positions
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GeometryVertexAttrib), nullptr);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(ScreenTexVertexAttrib), nullptr);
 		glEnableVertexAttribArray(0);
 
-		//Vertex normal								
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GeometryVertexAttrib), (void*)offsetof(GeometryVertexAttrib, normal));
-		glEnableVertexAttribArray(1);		
-
-		//Texture uvs
-		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(GeometryVertexAttrib), (void*)offsetof(GeometryVertexAttrib, uv));
-		glEnableVertexAttribArray(2);
-
 	}
-	void update(std::vector<GeometryVertexAttrib>& vertices)
+	void update(std::vector<ScreenTexVertexAttrib>& vertices)
 	{
 		size = vertices.size();
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
