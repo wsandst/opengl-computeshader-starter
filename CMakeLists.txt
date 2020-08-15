@@ -1,5 +1,5 @@
 ###########################################################################
-### OpenGL Starter project" #
+### OpenGL Compute Shader Starter project" #
 ###########################################################################
 # Includes a bunch of macros for improving IDE compatability, mainly focused on Windows Visual Studios"
 # Supports a shaders/ folder in src/ as well as an assets/ folder in the repo, which are both copied/symlinked next to the exe
@@ -19,10 +19,10 @@ set(CMAKE_CXX_FLAGS "-pthread -g")
 set(CMAKE_CXX_FLAGS_DEBUG "-D -g -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -pthread")
 
-project(opengl-starter
+project(opengl-cs-starter
     LANGUAGES C CXX
-    VERSION 1.0.0
-    DESCRIPTION "OpenGL Starter Project"
+    VERSION 1.0.07
+    DESCRIPTION "OpenGL Compute Shader Starter Project"
 )
 
 # Add cmake folder for custom find_package() files

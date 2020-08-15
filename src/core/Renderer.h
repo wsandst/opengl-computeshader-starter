@@ -27,7 +27,7 @@ typedef std::chrono::high_resolution_clock::time_point TimePoint;
 class Renderer {
 public:
 	//Render settings
-	const char* windowTitle = "OpenGL Starter";
+	const char* windowTitle = "OpenGL Compute Shader Starter";
 	const bool VSYNCEnabled = true;
 	const int MSAALevel = 4; //MSAA Antialiasing: 1 for none, 2 for 4x, 4 for 16x
 	//Toggleables from within the engine
